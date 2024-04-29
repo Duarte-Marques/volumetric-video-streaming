@@ -1,0 +1,3 @@
+/home/rengo/isep/volumetric-streaming/sender/build/CMakeFiles/sender.dir
+/home/rengo/isep/volumetric-streaming/sender/build/CMakeFiles/edit_cache.dir
+/home/rengo/isep/volumetric-streaming/sender/build/CMakeFiles/rebuild_cache.dir
