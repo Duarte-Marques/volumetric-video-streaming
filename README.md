@@ -1,5 +1,7 @@
 # ZED SDK - Streaming Sender
 
+https://www.spirit-project.eu/wp-content/uploads/sites/85/2024/03/Scalable-MDC-Based-Volumetric-Video-Delivery-for-Real-Time.pdf
+
 This sample shows how to enable streaming module of the ZED SDK as image sender.
 
 ## Getting Started
