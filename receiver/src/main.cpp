@@ -147,7 +147,6 @@ void switchViewMode() {
     if (view_mode == VIEW::CONFIDENCE)
         view_mode = VIEW::LEFT;
 
-
     print("Switch to view mode: ", ERROR_CODE::SUCCESS, string(sl::toString(view_mode).c_str()));
 }
 
