@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rengo/isep/volumetric-streaming/receiver
+CMAKE_SOURCE_DIR = /home/rengo/isep/volumetric-video-streaming/receiver
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rengo/isep/volumetric-streaming/receiver/build
+CMAKE_BINARY_DIR = /home/rengo/isep/volumetric-video-streaming/receiver/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/rengo/isep/volumetric-streaming/receiver/build/CMakeFiles /home/rengo/isep/volumetric-streaming/receiver/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/rengo/isep/volumetric-video-streaming/receiver/build/CMakeFiles /home/rengo/isep/volumetric-video-streaming/receiver/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/rengo/isep/volumetric-streaming/receiver/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/rengo/isep/volumetric-video-streaming/receiver/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -129,6 +129,30 @@ receiver/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/receiver.dir/build.make CMakeFiles/receiver.dir/build
 .PHONY : receiver/fast
 
+src/GLViewer.o: src/GLViewer.cpp.o
+.PHONY : src/GLViewer.o
+
+# target to build an object file
+src/GLViewer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/receiver.dir/build.make CMakeFiles/receiver.dir/src/GLViewer.cpp.o
+.PHONY : src/GLViewer.cpp.o
+
+src/GLViewer.i: src/GLViewer.cpp.i
+.PHONY : src/GLViewer.i
+
+# target to preprocess a source file
+src/GLViewer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/receiver.dir/build.make CMakeFiles/receiver.dir/src/GLViewer.cpp.i
+.PHONY : src/GLViewer.cpp.i
+
+src/GLViewer.s: src/GLViewer.cpp.s
+.PHONY : src/GLViewer.s
+
+# target to generate assembly for a file
+src/GLViewer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/receiver.dir/build.make CMakeFiles/receiver.dir/src/GLViewer.cpp.s
+.PHONY : src/GLViewer.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -162,6 +186,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... receiver"
+	@echo "... src/GLViewer.o"
+	@echo "... src/GLViewer.i"
+	@echo "... src/GLViewer.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

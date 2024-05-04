@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/receiver.dir/src/GLViewer.cpp.o"
+  "CMakeFiles/receiver.dir/src/GLViewer.cpp.o.d"
   "CMakeFiles/receiver.dir/src/main.cpp.o"
   "CMakeFiles/receiver.dir/src/main.cpp.o.d"
   "receiver"

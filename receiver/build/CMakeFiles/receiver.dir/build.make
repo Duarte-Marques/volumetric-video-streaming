@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rengo/isep/volumetric-streaming/receiver
+CMAKE_SOURCE_DIR = /home/rengo/isep/volumetric-video-streaming/receiver
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rengo/isep/volumetric-streaming/receiver/build
+CMAKE_BINARY_DIR = /home/rengo/isep/volumetric-video-streaming/receiver/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/receiver.dir/depend.make
@@ -69,27 +69,43 @@ include CMakeFiles/receiver.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/receiver.dir/flags.make
 
+CMakeFiles/receiver.dir/src/GLViewer.cpp.o: CMakeFiles/receiver.dir/flags.make
+CMakeFiles/receiver.dir/src/GLViewer.cpp.o: ../src/GLViewer.cpp
+CMakeFiles/receiver.dir/src/GLViewer.cpp.o: CMakeFiles/receiver.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/rengo/isep/volumetric-video-streaming/receiver/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/receiver.dir/src/GLViewer.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/receiver.dir/src/GLViewer.cpp.o -MF CMakeFiles/receiver.dir/src/GLViewer.cpp.o.d -o CMakeFiles/receiver.dir/src/GLViewer.cpp.o -c /home/rengo/isep/volumetric-video-streaming/receiver/src/GLViewer.cpp
+
+CMakeFiles/receiver.dir/src/GLViewer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/receiver.dir/src/GLViewer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rengo/isep/volumetric-video-streaming/receiver/src/GLViewer.cpp > CMakeFiles/receiver.dir/src/GLViewer.cpp.i
+
+CMakeFiles/receiver.dir/src/GLViewer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/receiver.dir/src/GLViewer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rengo/isep/volumetric-video-streaming/receiver/src/GLViewer.cpp -o CMakeFiles/receiver.dir/src/GLViewer.cpp.s
+
 CMakeFiles/receiver.dir/src/main.cpp.o: CMakeFiles/receiver.dir/flags.make
 CMakeFiles/receiver.dir/src/main.cpp.o: ../src/main.cpp
 CMakeFiles/receiver.dir/src/main.cpp.o: CMakeFiles/receiver.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/rengo/isep/volumetric-streaming/receiver/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/receiver.dir/src/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/receiver.dir/src/main.cpp.o -MF CMakeFiles/receiver.dir/src/main.cpp.o.d -o CMakeFiles/receiver.dir/src/main.cpp.o -c /home/rengo/isep/volumetric-streaming/receiver/src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/rengo/isep/volumetric-video-streaming/receiver/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/receiver.dir/src/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/receiver.dir/src/main.cpp.o -MF CMakeFiles/receiver.dir/src/main.cpp.o.d -o CMakeFiles/receiver.dir/src/main.cpp.o -c /home/rengo/isep/volumetric-video-streaming/receiver/src/main.cpp
 
 CMakeFiles/receiver.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/receiver.dir/src/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rengo/isep/volumetric-streaming/receiver/src/main.cpp > CMakeFiles/receiver.dir/src/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rengo/isep/volumetric-video-streaming/receiver/src/main.cpp > CMakeFiles/receiver.dir/src/main.cpp.i
 
 CMakeFiles/receiver.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/receiver.dir/src/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rengo/isep/volumetric-streaming/receiver/src/main.cpp -o CMakeFiles/receiver.dir/src/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rengo/isep/volumetric-video-streaming/receiver/src/main.cpp -o CMakeFiles/receiver.dir/src/main.cpp.s
 
 # Object files for target receiver
 receiver_OBJECTS = \
+"CMakeFiles/receiver.dir/src/GLViewer.cpp.o" \
 "CMakeFiles/receiver.dir/src/main.cpp.o"
 
 # External object files for target receiver
 receiver_EXTERNAL_OBJECTS =
 
+receiver: CMakeFiles/receiver.dir/src/GLViewer.cpp.o
 receiver: CMakeFiles/receiver.dir/src/main.cpp.o
 receiver: CMakeFiles/receiver.dir/build.make
 receiver: /usr/local/zed/lib/libsl_zed.so
@@ -158,7 +174,7 @@ receiver: /usr/lib/x86_64-linux-gnu/libopencv_photo.so.4.5.4d
 receiver: /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.4.5.4d
 receiver: /usr/lib/x86_64-linux-gnu/libopencv_core.so.4.5.4d
 receiver: CMakeFiles/receiver.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/rengo/isep/volumetric-streaming/receiver/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable receiver"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/rengo/isep/volumetric-video-streaming/receiver/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable receiver"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/receiver.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -170,6 +186,6 @@ CMakeFiles/receiver.dir/clean:
 .PHONY : CMakeFiles/receiver.dir/clean
 
 CMakeFiles/receiver.dir/depend:
-	cd /home/rengo/isep/volumetric-streaming/receiver/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rengo/isep/volumetric-streaming/receiver /home/rengo/isep/volumetric-streaming/receiver /home/rengo/isep/volumetric-streaming/receiver/build /home/rengo/isep/volumetric-streaming/receiver/build /home/rengo/isep/volumetric-streaming/receiver/build/CMakeFiles/receiver.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/rengo/isep/volumetric-video-streaming/receiver/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rengo/isep/volumetric-video-streaming/receiver /home/rengo/isep/volumetric-video-streaming/receiver /home/rengo/isep/volumetric-video-streaming/receiver/build /home/rengo/isep/volumetric-video-streaming/receiver/build /home/rengo/isep/volumetric-video-streaming/receiver/build/CMakeFiles/receiver.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/receiver.dir/depend
 

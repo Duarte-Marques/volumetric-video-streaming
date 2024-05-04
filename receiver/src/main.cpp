@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <string.h>
 #include <sl/Camera.hpp>
 #include "GLViewer.hpp"
 #include <opencv2/opencv.hpp>
@@ -10,18 +8,8 @@ using namespace sl;
 #define BUILD_MESH 1
 
 void parse_args(int argc, char **argv,InitParameters& param, sl::Mat &roi);
-void handleKeyInput(char key, sl::Camera &zed);
-void switchCameraSettings();
-void switchViewMode();
-void printCameraSpecs(sl::Camera &zed);
-void printHelp();
-void print(string msg_prefix, ERROR_CODE err_code = ERROR_CODE::SUCCESS, string msg_suffix = "");
 
-// Sample variables
-VIDEO_SETTINGS camera_settings_ = VIDEO_SETTINGS::BRIGHTNESS;
-VIEW view_mode = VIEW::LEFT;
-string str_camera_settings = "BRIGHTNESS";
-int step_camera_setting = 1;
+void print(std::string msg_prefix, sl::ERROR_CODE err_code = sl::ERROR_CODE::SUCCESS, std::string msg_suffix = "");
 
 int main(int argc, char **argv) {
     Camera zed;
@@ -31,154 +19,188 @@ int main(int argc, char **argv) {
     init_parameters.coordinate_units = UNIT::METER;
     init_parameters.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP; // OpenGL's coordinate system is right_handed
     init_parameters.depth_maximum_distance = 8.;
-    init_parameters.sdk_verbose = true;
     init_parameters.input.setFromStream("127.0.0.1");
 
     sl::Mat roi;
-    cv::String win_name = "Camera Remote Control";
-    cv::namedWindow(win_name);
+    parse_args(argc, argv, init_parameters, roi);
 
     // Open the camera
     auto returned_state = zed.open(init_parameters);
-    if (returned_state != ERROR_CODE::SUCCESS) {
-        print("Camera Open", returned_state, "Exit program.");
+
+    if (returned_state != ERROR_CODE::SUCCESS) {// Quit if an error occurred
+        print("Open Camera", returned_state, "\nExit program.");
+        zed.close();
         return EXIT_FAILURE;
     }
 
-    printCameraSpecs(zed);
-    printHelp();
-    switchCameraSettings();
+    if(roi.isInit()) {
+        auto state = zed.setRegionOfInterest(roi, {sl::MODULE::POSITIONAL_TRACKING, sl::MODULE::SPATIAL_MAPPING});
+        std::cout<<"Applied ROI "<<state<<"\n";
+    }
 
-    // Create a Mat to store images
-    Mat image;
+    /* Print shortcuts*/
+    std::cout<<"Shortcuts\n";
+    std::cout<<"\t- 'l' to enable/disable current live point cloud display\n";
+    std::cout<<"\t- 'w' to switch mesh display from faces to triangles\n";
+    std::cout<<"\t- 'd' to switch background color from dark to light\n";
 
-    char key = ' ';
-    while (key != 'q') {
-        // Check that a new image is successfully acquired
-        returned_state = zed.grab();
-        if (returned_state == ERROR_CODE::SUCCESS) {
-            zed.retrieveImage(image, view_mode);
+    auto camera_infos = zed.getCameraInformation();
 
-            // Convert sl::Mat to cv::Mat (share buffer)
-            cv::Mat cvImage(image.getHeight(), image.getWidth(), (image.getChannels() == 1) ? CV_8UC1 : CV_8UC4, image.getPtr<sl::uchar1>(sl::MEM::CPU));
+    // Setup and start positional tracking
+    Pose pose;
+    POSITIONAL_TRACKING_STATE tracking_state = POSITIONAL_TRACKING_STATE::OFF;
 
-            // Display image with OpenCV
-            cv::imshow(win_name, cvImage);
-            
-        } else {
-            print("Error during capture : ", returned_state);
-            break;
+    returned_state = zed.enablePositionalTracking();
+    if (returned_state != ERROR_CODE::SUCCESS) {
+        print("Enabling positional tracking failed: ", returned_state);
+        zed.close();
+        return EXIT_FAILURE;
+    }
+
+    // Set spatial mapping parameters
+    SpatialMappingParameters spatial_mapping_parameters;
+    // Request a Point Cloud
+    #if BUILD_MESH
+        spatial_mapping_parameters.map_type = SpatialMappingParameters::SPATIAL_MAP_TYPE::MESH;
+        Mesh map;
+    #else
+        spatial_mapping_parameters.map_type = SpatialMappingParameters::SPATIAL_MAP_TYPE::FUSED_POINT_CLOUD;
+        FusedPointCloud map;
+    #endif
+
+    // Set mapping range, it will set the resolution accordingly (a higher range, a lower resolution)
+    spatial_mapping_parameters.set(SpatialMappingParameters::MAPPING_RANGE::SHORT);
+    spatial_mapping_parameters.set(SpatialMappingParameters::MAPPING_RESOLUTION::HIGH);
+    // Request partial updates only (only the last updated chunks need to be re-draw)
+    spatial_mapping_parameters.use_chunk_only = true;
+    // Stability counter defines how many times a stable 3D points should be seen before it is integrated into the spatial mapping
+    spatial_mapping_parameters.stability_counter = 4;
+
+    // Timestamp of the last fused point cloud requested
+    chrono::high_resolution_clock::time_point ts_last; 
+
+    // Setup runtime parameters
+    RuntimeParameters runtime_parameters;
+    // Use low depth confidence to avoid introducing noise in the constructed model
+    runtime_parameters.confidence_threshold = 50;
+
+    auto resolution = camera_infos.camera_configuration.resolution;
+
+    // Define display resolution and check that it fit at least the image resolution
+    float image_aspect_ratio = resolution.width / (1.f * resolution.height);
+    int requested_low_res_w = min(720, (int)resolution.width);
+    sl::Resolution display_resolution(requested_low_res_w, requested_low_res_w / image_aspect_ratio);
+
+    Mat image(display_resolution, MAT_TYPE::U8_C4, sl::MEM::GPU);
+    Mat point_cloud(display_resolution, MAT_TYPE::F32_C4, sl::MEM::GPU);
+    
+    // Point cloud viewer
+    GLViewer viewer;
+
+    viewer.init(argc, argv, image, point_cloud, zed.getCUDAStream());
+ 
+    bool request_new_mesh = true;
+    bool wait_for_mapping = true;
+
+    sl::Timestamp timestamp_start;
+    timestamp_start.data_ns = 0;
+
+    // Start the main loop
+    while (viewer.isAvailable()) {
+        // Grab a new image
+        if (zed.grab(runtime_parameters) == ERROR_CODE::SUCCESS)
+        {
+            // Retrieve the left image
+            zed.retrieveImage(image, VIEW::LEFT, MEM::GPU, display_resolution);
+            zed.retrieveMeasure(point_cloud, MEASURE::XYZBGRA, MEM::GPU, display_resolution);
+            // Retrieve the camera pose data
+            tracking_state = zed.getPosition(pose);
+            viewer.updateCameraPose(pose.pose_data, tracking_state);
+
+            if (tracking_state == POSITIONAL_TRACKING_STATE::OK) {
+                if(wait_for_mapping) {
+                    zed.enableSpatialMapping(spatial_mapping_parameters);
+                    wait_for_mapping = false;
+                } else {
+                    if(request_new_mesh) {
+                        auto duration = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - ts_last).count();                    
+                        // Ask for a fused point cloud update if 500ms have elapsed since last request
+                        if(duration > 100) {
+                            // Ask for a point cloud refresh
+                            zed.requestSpatialMapAsync();
+                            request_new_mesh = false;
+                        }
+                    }
+                    
+                    // If the point cloud is ready to be retrieved
+                    if(zed.getSpatialMapRequestStatusAsync() == ERROR_CODE::SUCCESS && !request_new_mesh) {
+                        zed.retrieveSpatialMapAsync(map);
+                        viewer.updateMap(map);
+                        request_new_mesh = true;
+                        ts_last = chrono::high_resolution_clock::now();
+                    }
+                }
+            }
+        }
+    }
+
+    // Save generated point cloud
+    map.save("MyMap", sl::MESH_FILE_FORMAT::PLY);
+
+    // Free allocated memory before closing the camera
+    image.free();
+    point_cloud.free();
+    // Close the ZED
+    zed.close();
+
+    return 0;
+}
+
+void parse_args(int argc, char **argv,InitParameters& param, sl::Mat &roi)
+{
+    if(argc == 1) return;
+    for(int id = 1; id < argc; id ++) {
+        std::string arg(argv[id]);
+        if(arg.find(".svo")!=string::npos) {
+            // SVO input mode
+            param.input.setFromSVOFile(arg.c_str());
+            param.svo_real_time_mode=true;
+            cout<<"[Sample] Using SVO File input: "<<arg<<endl;
         }
 
-        key = cv::waitKey(5);
-        // Change camera settings with keyboard
-        handleKeyInput(key, zed);
-    }
-
-    zed.close();
-    return EXIT_SUCCESS;
-}
-
-void handleKeyInput(char key, sl::Camera &zed) {
-    int current_value;
-
-    switch (key) {
-        case 'h': // Print help
-            printHelp();
-            break;
-    
-        case 'v': // Switch to the next view mode
-            switchViewMode();
-            break;
-
-        case 's': // Switch to the next camera parameter
-            switchCameraSettings();
-            zed.getCameraSettings(camera_settings_,current_value);
-            break;
-
-        case '+': // Increase camera settings value ('+' key)
-            zed.getCameraSettings(camera_settings_,current_value);
-            zed.setCameraSettings(camera_settings_, current_value + step_camera_setting);
-            zed.getCameraSettings(camera_settings_,current_value);
-            print(str_camera_settings+": "+std::to_string(current_value));
-            break;  
-
-        case '-': // Decrease camera settings value ('-' key)
-            zed.getCameraSettings(camera_settings_,current_value);
-            current_value = current_value > 0 ? current_value - step_camera_setting : 0; // take care of the 'default' value parameter:  VIDEO_SETTINGS_VALUE_AUTO
-            zed.setCameraSettings(camera_settings_, current_value);
-            zed.getCameraSettings(camera_settings_,current_value);
-            print(str_camera_settings+": "+std::to_string(current_value));
-            break;
-
-        case 'r': // Reset to default parameters
-            print("Reset all settings to default");
-            for (int s = (int) VIDEO_SETTINGS::BRIGHTNESS; s <= (int) VIDEO_SETTINGS::WHITEBALANCE_TEMPERATURE; s++)
-                zed.setCameraSettings(static_cast<VIDEO_SETTINGS> (s), sl::VIDEO_SETTINGS_VALUE_AUTO);
-            break;
-
-        default :
-        break;
+        if (arg.find("HD2K") != string::npos) {
+            param.camera_resolution = RESOLUTION::HD2K;
+            cout << "[Sample] Using Camera in resolution HD2K" << endl;
+        }else if (arg.find("HD1200") != string::npos) {
+            param.camera_resolution = RESOLUTION::HD1200;
+            cout << "[Sample] Using Camera in resolution HD1200" << endl;
+        } else if (arg.find("HD1080") != string::npos) {
+            param.camera_resolution = RESOLUTION::HD1080;
+            cout << "[Sample] Using Camera in resolution HD1080" << endl;
+        } else if (arg.find("HD720") != string::npos) {
+            param.camera_resolution = RESOLUTION::HD720;
+            cout << "[Sample] Using Camera in resolution HD720" << endl;
+        }else if (arg.find("SVGA") != string::npos) {
+            param.camera_resolution = RESOLUTION::SVGA;
+            cout << "[Sample] Using Camera in resolution SVGA" << endl;
+        }else if (arg.find("VGA") != string::npos) {
+            param.camera_resolution = RESOLUTION::VGA;
+            cout << "[Sample] Using Camera in resolution VGA" << endl;
+        }else if ((arg.find(".png") != string::npos) || ((arg.find(".jpg") != string::npos))) {
+            roi.read(arg.c_str());
+            cout << "[Sample] Using Region of intererest from "<< arg << endl;
+        }
     }
 }
 
-void switchCameraSettings() {
-    camera_settings_ = static_cast<VIDEO_SETTINGS> ((int) camera_settings_ + 1);
-
-    // reset to 1st setting
-    if (camera_settings_ == VIDEO_SETTINGS::LED_STATUS)
-        camera_settings_ = VIDEO_SETTINGS::BRIGHTNESS;
-
-    // select the right step
-    step_camera_setting = (camera_settings_ == VIDEO_SETTINGS::WHITEBALANCE_TEMPERATURE) ? 100 : 1;
-
-    // get the name of the selected SETTING
-    str_camera_settings = string(sl::toString(camera_settings_).c_str());
-
-    print("Switch to camera settings: ", ERROR_CODE::SUCCESS, str_camera_settings);
-}
-
-void switchViewMode() {
-    print("Switching mode not avaiable");
-    return;
-    view_mode = static_cast<VIEW> ((int) view_mode + 1);
-
-    // reset to 1st setting
-    if (view_mode == VIEW::CONFIDENCE)
-        view_mode = VIEW::LEFT;
-
-    print("Switch to view mode: ", ERROR_CODE::SUCCESS, string(sl::toString(view_mode).c_str()));
-}
-
-void printCameraSpecs(sl::Camera &zed) {
-    auto camera_info = zed.getCameraInformation();
-    cout << endl;
-    cout << "ZED Model                 : " << camera_info.camera_model << endl;
-    cout << "ZED Serial Number         : " << camera_info.serial_number << endl;
-    cout << "ZED Camera Firmware       : " << camera_info.camera_configuration.firmware_version << "/" << camera_info.sensors_configuration.firmware_version << endl;
-    cout << "ZED Camera Resolution     : " << camera_info.camera_configuration.resolution.width << "x" << camera_info.camera_configuration.resolution.height << endl;
-    cout << "ZED Camera FPS            : " << zed.getInitParameters().camera_fps << endl;
-}
-
-void printHelp() {
-    cout << "\n\nCamera controls hotkeys:\n";
-    cout << "* Increase camera settings value:  '+'\n";
-    cout << "* Decrease camera settings value:  '-'\n";
-    cout << "* Toggle camera settings:          's'\n";
-    cout << "* Toggle view mode:                'v'\n";
-    cout << "* Reset all parameters:            'r'\n";
-    cout << "* Print help:                      'h'\n";
-    cout << "* Exit :                           'q'\n\n";
-}
-
-void print(string msg_prefix, ERROR_CODE err_code, string msg_suffix) {
-    cout << "[Sample]";
-    if (err_code != ERROR_CODE::SUCCESS)
+void print(std::string msg_prefix, sl::ERROR_CODE err_code, std::string msg_suffix) {
+    cout <<"[Sample]";
+    if (err_code != sl::ERROR_CODE::SUCCESS)
         cout << "[Error] ";
     else
-        cout << " ";
+        cout<<" ";
     cout << msg_prefix << " ";
-    if (err_code != ERROR_CODE::SUCCESS) {
+    if (err_code != sl::ERROR_CODE::SUCCESS) {
         cout << " | " << toString(err_code) << " : ";
         cout << toVerbose(err_code);
     }
