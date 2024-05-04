@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 
     InitParameters init_parameters;
     init_parameters.depth_mode = DEPTH_MODE::NEURAL;
-    init_parameters.coordinate_units = UNIT::METER
+    init_parameters.coordinate_units = UNIT::METER;
     init_parameters.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP; // OpenGL's coordinate system is right_handed
     init_parameters.depth_maximum_distance = 8.;
     init_parameters.sdk_verbose = true;

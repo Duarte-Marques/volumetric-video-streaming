@@ -1,0 +1,13 @@
+-> Estado de Arte
+
+-> Design
+  - Detalhar ZED
+  - Streaming video
+  - Setup experiencias
+  - Métricas
+
+-> Experiencias
+
+-> Resultados
+
+-> Conclusão
