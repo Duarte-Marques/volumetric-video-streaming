@@ -105,7 +105,12 @@ int main(int argc, char **argv) {
     sl::Timestamp timestamp_start;
     timestamp_start.data_ns = 0;
 
-    std::ofstream myfile("data.txt", std::ios::app);
+    auto now = std::chrono::system_clock::now();
+    std::time_t current_time = std::chrono::system_clock::to_time_t(now);
+
+    // Set the output file the current timestamp
+    std::ofstream outputFile(std::ctime(&current_time), std::ios::app);
+    outputFile << "fps,latency" << std::endl;
 
     // Start the main loop
     while (viewer.isAvailable()) {
@@ -122,7 +127,7 @@ int main(int argc, char **argv) {
             if (tracking_state == POSITIONAL_TRACKING_STATE::OK) {
 
                 // Save current FPS value to file
-                myfile << zed.getCurrentFPS() << std::endl;
+                outputFile << zed.getCurrentFPS() << "," << "0" << std::endl;
 
                 if(wait_for_mapping) {
                     zed.enableSpatialMapping(spatial_mapping_parameters);
@@ -150,7 +155,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    myfile.close();
+    outputFile.close();
     map.save("MyMap", sl::MESH_FILE_FORMAT::PLY);
     image.free();
     point_cloud.free();
