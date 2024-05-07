@@ -1,19 +1,19 @@
 Determining if the function sgemm_ exists failed with the following output:
-Change Dir: /home/rengo/isep/volumetric-video-streaming/receiver/build/CMakeFiles/CMakeTmp
+Change Dir: /home/ggbyte/volumetric-video-streaming/receiver/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_4dff5/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_4dff5.dir/build.make CMakeFiles/cmTC_4dff5.dir/build
-gmake[1]: Entering directory '/home/rengo/isep/volumetric-video-streaming/receiver/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_4dff5.dir/CheckFunctionExists.c.o
-/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=sgemm_ -o CMakeFiles/cmTC_4dff5.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
-Linking C executable cmTC_4dff5
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4dff5.dir/link.txt --verbose=1
-/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=sgemm_ CMakeFiles/cmTC_4dff5.dir/CheckFunctionExists.c.o -o cmTC_4dff5 
-/usr/bin/ld: CMakeFiles/cmTC_4dff5.dir/CheckFunctionExists.c.o: in function `main':
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_106c0/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_106c0.dir/build.make CMakeFiles/cmTC_106c0.dir/build
+gmake[1]: Entering directory '/home/ggbyte/volumetric-video-streaming/receiver/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_106c0.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=sgemm_ -o CMakeFiles/cmTC_106c0.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_106c0
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_106c0.dir/link.txt --verbose=1
+/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=sgemm_ CMakeFiles/cmTC_106c0.dir/CheckFunctionExists.c.o -o cmTC_106c0 
+/usr/bin/ld: CMakeFiles/cmTC_106c0.dir/CheckFunctionExists.c.o: in function `main':
 CheckFunctionExists.c:(.text+0x14): undefined reference to `sgemm_'
 collect2: error: ld returned 1 exit status
-gmake[1]: *** [CMakeFiles/cmTC_4dff5.dir/build.make:99: cmTC_4dff5] Error 1
-gmake[1]: Leaving directory '/home/rengo/isep/volumetric-video-streaming/receiver/build/CMakeFiles/CMakeTmp'
-gmake: *** [Makefile:127: cmTC_4dff5/fast] Error 2
+gmake[1]: *** [CMakeFiles/cmTC_106c0.dir/build.make:99: cmTC_106c0] Error 1
+gmake[1]: Leaving directory '/home/ggbyte/volumetric-video-streaming/receiver/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_106c0/fast] Error 2
 
 
 

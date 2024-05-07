@@ -1,4 +1,4 @@
-# Install script for directory: /home/rengo/isep/volumetric-video-streaming/receiver
+# Install script for directory: /home/ggbyte/volumetric-video-streaming/receiver
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/rengo/isep/volumetric-video-streaming/receiver/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/ggbyte/volumetric-video-streaming/receiver/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

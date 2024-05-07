@@ -19,24 +19,25 @@ int main(int argc, char **argv) {
     init_parameters.coordinate_units = UNIT::METER;
     init_parameters.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP; // OpenGL's coordinate system is right_handed
     init_parameters.depth_maximum_distance = 8.;
-    init_parameters.input.setFromStream("127.0.0.1");
+    init_parameters.input.setFromStream("127.0.0.1", 30000);
 
-    sl::Mat roi;
-    parse_args(argc, argv, init_parameters, roi);
+    // sl::Mat roi;
+    // parse_args(argc, argv, init_parameters, roi);
 
     // Open the camera
     auto returned_state = zed.open(init_parameters);
 
-    if (returned_state != ERROR_CODE::SUCCESS) {// Quit if an error occurred
+    // Quit if an error occurred
+    if (returned_state != ERROR_CODE::SUCCESS) {
         print("Open Camera", returned_state, "\nExit program.");
         zed.close();
         return EXIT_FAILURE;
     }
 
-    if(roi.isInit()) {
-        auto state = zed.setRegionOfInterest(roi, {sl::MODULE::POSITIONAL_TRACKING, sl::MODULE::SPATIAL_MAPPING});
-        std::cout<<"Applied ROI "<<state<<"\n";
-    }
+    // if(roi.isInit()) {
+    //     auto state = zed.setRegionOfInterest(roi, {sl::MODULE::POSITIONAL_TRACKING, sl::MODULE::SPATIAL_MAPPING});
+    //     std::cout<<"Applied ROI "<<state<<"\n";
+    // }
 
     /* Print shortcuts*/
     std::cout<<"Shortcuts\n";
@@ -46,10 +47,11 @@ int main(int argc, char **argv) {
 
     auto camera_infos = zed.getCameraInformation();
 
+
     // Setup and start positional tracking
     Pose pose;
     POSITIONAL_TRACKING_STATE tracking_state = POSITIONAL_TRACKING_STATE::OFF;
-
+    
     returned_state = zed.enablePositionalTracking();
     if (returned_state != ERROR_CODE::SUCCESS) {
         print("Enabling positional tracking failed: ", returned_state);

@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/usr/local/zed/include -I/usr/local/cuda/include -I/home/rengo/isep/volumetric-video-streaming/receiver/include -isystem /usr/include/opencv4
+CXX_INCLUDES = -I/usr/local/zed/include -I/usr/local/cuda/include -I/home/ggbyte/volumetric-video-streaming/receiver/include -isystem /usr/local/include/opencv4
 
 CXX_FLAGS = -O3 -DNDEBUG -std=gnu++14
 
