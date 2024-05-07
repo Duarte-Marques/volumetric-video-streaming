@@ -11,6 +11,7 @@
 * HD720 (15,30,60)
 * VGA (15,30,60,100)
 > init_params.camera_resolution = RESOLUTION::HD1080;
+
 > init_params.camera_fps = 30;
 
 ### BITRATE
