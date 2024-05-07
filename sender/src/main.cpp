@@ -5,7 +5,6 @@ using namespace sl;
 using namespace std;
 
 void print(string msg_prefix, ERROR_CODE err_code = ERROR_CODE::SUCCESS, string msg_suffix = "");
-int parseArgs(int argc, char **argv, sl::InitParameters& param);
 
 int main(int argc, char **argv) {
     Camera zed;

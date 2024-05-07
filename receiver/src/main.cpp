@@ -8,7 +8,6 @@ using namespace sl;
 #define BUILD_MESH 1
 
 void parse_args(int argc, char **argv,InitParameters& param, sl::Mat &roi);
-
 void print(std::string msg_prefix, sl::ERROR_CODE err_code = sl::ERROR_CODE::SUCCESS, std::string msg_suffix = "");
 
 int main(int argc, char **argv) {
@@ -46,7 +45,6 @@ int main(int argc, char **argv) {
     std::cout<<"\t- 'd' to switch background color from dark to light\n";
 
     auto camera_infos = zed.getCameraInformation();
-
 
     // Setup and start positional tracking
     Pose pose;
@@ -107,6 +105,8 @@ int main(int argc, char **argv) {
     sl::Timestamp timestamp_start;
     timestamp_start.data_ns = 0;
 
+    std::ofstream myfile("data.txt", std::ios::app);
+
     // Start the main loop
     while (viewer.isAvailable()) {
         // Grab a new image
@@ -120,6 +120,10 @@ int main(int argc, char **argv) {
             viewer.updateCameraPose(pose.pose_data, tracking_state);
 
             if (tracking_state == POSITIONAL_TRACKING_STATE::OK) {
+
+                // Save current FPS value to file
+                myfile << zed.getCurrentFPS() << std::endl;
+
                 if(wait_for_mapping) {
                     zed.enableSpatialMapping(spatial_mapping_parameters);
                     wait_for_mapping = false;
@@ -146,15 +150,11 @@ int main(int argc, char **argv) {
         }
     }
 
-    // Save generated point cloud
+    myfile.close();
     map.save("MyMap", sl::MESH_FILE_FORMAT::PLY);
-
-    // Free allocated memory before closing the camera
     image.free();
     point_cloud.free();
-    // Close the ZED
     zed.close();
-
     return 0;
 }
 
