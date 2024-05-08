@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
     init_parameters.coordinate_units = UNIT::METER;
     init_parameters.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP; // OpenGL's coordinate system is right_handed
     init_parameters.depth_maximum_distance = 8.;
-    init_parameters.input.setFromStream("127.0.0.1", 30000);
+    init_parameters.input.setFromStream("192.168.1.95", 30000);
 
     // sl::Mat roi;
     // parse_args(argc, argv, init_parameters, roi);
