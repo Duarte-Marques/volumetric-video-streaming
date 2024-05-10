@@ -19,7 +19,11 @@
 > stream_params.bitrate = 8000;
 
 https://www.stereolabs.com/docs/video/streaming
-
 https://www.stereolabs.com/docs/video/camera-controls#selecting-a-resolution
-
 https://www.stereolabs.com/docs/api/structsl_1_1StreamingParameters.html#details
+
+# Work Log
+* Install ZED SDK
+* Install CUDA (check install tutorial for this 2)
+* Reference GStreamer?
+* Precision Time Protocol
