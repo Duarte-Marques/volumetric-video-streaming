@@ -1,10 +1,23 @@
 # Volumetric Video Streaming
 
 ## Run the program
-- Navigate to each of the build directories and launch the executable:
+You have to run separatly two c++ codes, `sender` and `receiver`. Navigate to each of the build directories and launch the executable:
 
-        ./sender
-        ./receiver 192.168.1.95:30000
+### `./sender`
+* props
+  * codec (H264 or H265) ex: `./sender H264`
+  * -b (bitrate) [1000-60000] ex: `./sender -b 7500`
+  * -p (port) ex: `./sender -p 1234` (default 30000)
+
+Full example:
+> ./sender H265 -b 8000 -p 5200
+
+### `./receiver`
+* props
+  * resolution (HD2K, HD1200, HD1080, HD720, SVGA, VGA) (default: AUTO) ex: `./receiver HD1080`
+  * -ip (ip from sender) ex: `./receiver -ip 190.170.1.2:30000`
+
+./receiver 192.168.1.95:30000
 
 ## Related to ZED
  - Get the latest [ZED SDK](https://www.stereolabs.com/developers/release/)

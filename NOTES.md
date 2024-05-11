@@ -1,11 +1,11 @@
 # TEST CASES
 
-### STREAMING_CODEC
+### STREAMING_CODEC (SET ON SENDER)
 * H264 - AVCHD/H264 encoding 
 * H265 - HEVC/H265 encoding 
 > stream_params.codec = sl::STREAMING_CODEC::H264; // Can be H264 or H265
 
-### RESOLUTION (FPS AVAILABLE)
+### RESOLUTION (FPS AVAILABLE) (SET ON RECEIVER)
 * HD2K (15)
 * HD1080 (15,30)
 * HD720 (15,30,60)
@@ -27,3 +27,14 @@ https://www.stereolabs.com/docs/api/structsl_1_1StreamingParameters.html#details
 * Install CUDA (check install tutorial for this 2)
 * Reference GStreamer?
 * Precision Time Protocol
+
+# Dissertation Chapters
+1. Estado de Arte
+2. Design
+  - Detalhar ZED
+  - Streaming video
+  - Setup experiencias
+  - Métricas
+3. Experiencias
+4. Resultados
+5. Conclusão
