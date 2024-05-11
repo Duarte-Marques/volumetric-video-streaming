@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
     Camera zed;
 
     InitParameters init_parameters;
-    init_parameters.camera_resolution = sl::RESOLUTION::AUTO;
+    // init_parameters.camera_resolution = sl::RESOLUTION::AUTO;
     init_parameters.depth_mode = DEPTH_MODE::NONE;
     init_parameters.sdk_verbose = 1;
 
