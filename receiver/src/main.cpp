@@ -188,13 +188,6 @@ void parse_args(int argc, char **argv, InitParameters& param)
             print("Using Camera in resolution VGA");
             // FPS 15, 30, 60, 100
         }
-
-        if (args[id] == "-fps" && id + 1 < argc) {
-            int fps = std::stoi(args[id + 1]);
-            param.camera_fps = fps;
-            print("Using Camera with " + to_string(fps) + " FPS");
-            id++;
-        }
     }
 }
 
