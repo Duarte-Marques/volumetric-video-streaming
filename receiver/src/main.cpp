@@ -7,7 +7,7 @@ using namespace sl;
 
 #define BUILD_MESH 1
 
-void parse_args(int argc, char **argv,InitParameters& param, sl::Mat &roi);
+void parse_args(int argc, char **argv, InitParameters& param);
 void print(std::string msg_prefix, sl::ERROR_CODE err_code = sl::ERROR_CODE::SUCCESS, std::string msg_suffix = "");
 
 int main(int argc, char **argv) {
@@ -20,8 +20,7 @@ int main(int argc, char **argv) {
     init_parameters.depth_maximum_distance = 8.;
     init_parameters.input.setFromStream("192.168.1.95", 30000);
 
-    // sl::Mat roi;
-    // parse_args(argc, argv, init_parameters, roi);
+    parse_args(argc, argv, init_parameters);
 
     // Open the camera
     auto returned_state = zed.open(init_parameters);
@@ -32,11 +31,6 @@ int main(int argc, char **argv) {
         zed.close();
         return EXIT_FAILURE;
     }
-
-    // if(roi.isInit()) {
-    //     auto state = zed.setRegionOfInterest(roi, {sl::MODULE::POSITIONAL_TRACKING, sl::MODULE::SPATIAL_MAPPING});
-    //     std::cout<<"Applied ROI "<<state<<"\n";
-    // }
 
     /* Print shortcuts*/
     std::cout<<"Shortcuts\n";
@@ -106,10 +100,9 @@ int main(int argc, char **argv) {
     timestamp_start.data_ns = 0;
 
     auto now = std::chrono::system_clock::now();
-    std::time_t current_time = std::chrono::system_clock::to_time_t(now);
-
-    // Set the output file the current timestamp
-    std::ofstream outputFile(std::ctime(&current_time), std::ios::app);
+    auto now_time_t = std::chrono::system_clock::to_time_t(now);
+    std::string timestamp = std::to_string(now_time_t);
+    std::ofstream outputFile(timestamp + ".csv", std::ios::app);
     outputFile << "fps,latency" << std::endl;
 
     // Start the main loop
@@ -163,12 +156,15 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void parse_args(int argc, char **argv,InitParameters& param, sl::Mat &roi)
+void parse_args(int argc, char **argv, InitParameters& param)
 {
-    if(argc == 1) return;
+    std::vector<std::string> args(argv, argv + argc);
+
     for(int id = 1; id < argc; id ++) {
         std::string arg(argv[id]);
-        if(arg.find(".svo")!=string::npos) {
+
+        if(arg.find(".svo") != string::npos) {
+            // TODO RENDER FROM INPUT FILE -> BEST WAY FOR PRESENTATION?
             // SVO input mode
             param.input.setFromSVOFile(arg.c_str());
             param.svo_real_time_mode=true;
@@ -177,25 +173,27 @@ void parse_args(int argc, char **argv,InitParameters& param, sl::Mat &roi)
 
         if (arg.find("HD2K") != string::npos) {
             param.camera_resolution = RESOLUTION::HD2K;
-            cout << "[Sample] Using Camera in resolution HD2K" << endl;
-        }else if (arg.find("HD1200") != string::npos) {
-            param.camera_resolution = RESOLUTION::HD1200;
-            cout << "[Sample] Using Camera in resolution HD1200" << endl;
+            print("Using Camera in resolution HD2K");
+            // FPS 15
         } else if (arg.find("HD1080") != string::npos) {
             param.camera_resolution = RESOLUTION::HD1080;
-            cout << "[Sample] Using Camera in resolution HD1080" << endl;
+            print("Using Camera in resolution HD1080");
+            // FPS 15, 30
         } else if (arg.find("HD720") != string::npos) {
             param.camera_resolution = RESOLUTION::HD720;
-            cout << "[Sample] Using Camera in resolution HD720" << endl;
-        }else if (arg.find("SVGA") != string::npos) {
-            param.camera_resolution = RESOLUTION::SVGA;
-            cout << "[Sample] Using Camera in resolution SVGA" << endl;
-        }else if (arg.find("VGA") != string::npos) {
+            print("Using Camera in resolution HD720");            
+            // FPS 15, 30, 60
+        } else if (arg.find("VGA") != string::npos) {
             param.camera_resolution = RESOLUTION::VGA;
-            cout << "[Sample] Using Camera in resolution VGA" << endl;
-        }else if ((arg.find(".png") != string::npos) || ((arg.find(".jpg") != string::npos))) {
-            roi.read(arg.c_str());
-            cout << "[Sample] Using Region of intererest from "<< arg << endl;
+            print("Using Camera in resolution VGA");
+            // FPS 15, 30, 60, 100
+        }
+
+        if (args[id] == "-fps" && id + 1 < argc) {
+            int fps = std::stoi(args[id + 1]);
+            param.camera_fps = fps;
+            print("Using Camera with " + to_string(fps) + " FPS");
+            id++;
         }
     }
 }
