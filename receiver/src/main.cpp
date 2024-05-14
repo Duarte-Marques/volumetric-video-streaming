@@ -5,7 +5,7 @@
 using namespace std;
 using namespace sl;
 
-#define BUILD_MESH 1
+#define BUILD_MESH 0
 
 void parse_args(int argc, char **argv, InitParameters& param);
 void print(std::string msg_prefix, sl::ERROR_CODE err_code = sl::ERROR_CODE::SUCCESS, std::string msg_suffix = "");
@@ -21,11 +21,8 @@ int main(int argc, char **argv) {
     init_parameters.input.setFromStream("192.168.1.95", 30000);
 
     parse_args(argc, argv, init_parameters);
-
-    // Open the camera
     auto returned_state = zed.open(init_parameters);
 
-    // Quit if an error occurred
     if (returned_state != ERROR_CODE::SUCCESS) {
         print("Open Camera", returned_state, "\nExit program.");
         zed.close();
@@ -149,7 +146,8 @@ int main(int argc, char **argv) {
     }
 
     outputFile.close();
-    map.save("MyMap", sl::MESH_FILE_FORMAT::PLY);
+
+    map.save(timestamp.c_str(), sl::MESH_FILE_FORMAT::PLY);
     image.free();
     point_cloud.free();
     zed.close();
