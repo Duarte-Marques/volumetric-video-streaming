@@ -5,26 +5,26 @@
 using namespace sl;
 using namespace std;
 
-void parse_args(int argc, char **argv, StreamingParameters& param);
+void parse_args(int argc, char **argv, StreamingParameters& sparam, InitParameters& iparam);
 void print(string msg_prefix, ERROR_CODE err_code = ERROR_CODE::SUCCESS, string msg_suffix = "");
 
 int main(int argc, char **argv) {
     Camera zed;
 
-    InitParameters init_parameters;
-    // init_parameters.camera_resolution = sl::RESOLUTION::AUTO;
-    init_parameters.depth_mode = DEPTH_MODE::NONE;
-    init_parameters.sdk_verbose = 1;
+    InitParameters init_params;
+    // init_params.camera_resolution = sl::RESOLUTION::AUTO;
+    init_params.depth_mode = DEPTH_MODE::NONE;
+    init_params.sdk_verbose = 1;
 
-    auto returned_state = zed.open(init_parameters);
+    StreamingParameters stream_params;
+    parse_args(argc, argv, stream_params, init_params);
+
+    auto returned_state = zed.open(init_params);
 
     if (returned_state != ERROR_CODE::SUCCESS) {
         print("Camera Open", returned_state, "Exit program.");
         return EXIT_FAILURE;
     }
-
-    StreamingParameters stream_params;
-    parse_args(argc, argv, stream_params);
 
     returned_state = zed.enableStreaming(stream_params);
 
@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-void parse_args(int argc, char **argv, StreamingParameters& param)
+void parse_args(int argc, char **argv, StreamingParameters& sparam, InitParameters& iparam)
 {
     std::vector<std::string> args(argv, argv + argc);
 
@@ -54,25 +54,32 @@ void parse_args(int argc, char **argv, StreamingParameters& param)
         std::string arg(argv[id]);
 
         if (arg.find("H264") != string::npos) {
-            param.codec = sl::STREAMING_CODEC::H264;
+            sparam.codec = sl::STREAMING_CODEC::H264;
             print("Using codec H264");
         } else if (arg.find("H265") != string::npos) {
-            param.codec = sl::STREAMING_CODEC::H265;
+            sparam.codec = sl::STREAMING_CODEC::H265;
             print("Using codec H265");
         }
 
         if (args[id] == "-b" && id + 1 < argc) {
             int bitrate = std::stoi(args[id + 1]);
-            param.bitrate = bitrate;
+            sparam.bitrate = bitrate;
             print("Using " + to_string(bitrate) + " bitrate");
             ++id;
         }
 
         if (args[id] == "-p" && id + 1 < argc) {
             int port = std::stoi(args[id + 1]);
-            param.port = port;
+            sparam.port = port;
             print("Using port " + to_string(port));
             ++id;
+        }
+
+        if (args[id] == "-fps" && id + 1 < argc) {
+            int fps = std::stoi(args[id + 1]);
+            iparam.camera_fps = fps;
+            print("Using Camera with " + to_string(fps) + " FPS");
+            id++;
         }
     }
 }
