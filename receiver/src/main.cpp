@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
     init_parameters.coordinate_units = UNIT::METER;
     init_parameters.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP; // OpenGL's coordinate system is right_handed
     init_parameters.depth_maximum_distance = 8.;
-    init_parameters.input.setFromStream("192.168.1.95", 30000);
+    init_parameters.input.setFromStream("192.168.1.211", 30000);
 
     parse_args(argc, argv, init_parameters);
     auto returned_state = zed.open(init_parameters);
@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
     auto now_time_t = std::chrono::system_clock::to_time_t(now);
     std::string timestamp = std::to_string(now_time_t);
     std::ofstream outputFile(timestamp + ".csv", std::ios::app);
-    outputFile << "fps,latency" << std::endl;
+    outputFile << "fps,latency(ms)" << std::endl;
 
     // Start the main loop
     while (viewer.isAvailable()) {
@@ -115,9 +115,13 @@ int main(int argc, char **argv) {
             viewer.updateCameraPose(pose.pose_data, tracking_state);
 
             if (tracking_state == POSITIONAL_TRACKING_STATE::OK) {
+                sl::Timestamp image_ts = zed.getTimestamp(sl::TIME_REFERENCE::IMAGE);
+                sl::Timestamp current_ts = zed.getTimestamp(sl::TIME_REFERENCE::CURRENT);
 
-                // Save current FPS value to file
-                outputFile << zed.getCurrentFPS() << "," << "0" << std::endl;
+                long long diff_ms = (long long)current_ts.getMilliseconds() - (long long)image_ts.getMilliseconds();
+                
+                // Save current FPS and Latency value to file
+                outputFile << zed.getCurrentFPS() << "," << diff_ms << std::endl;
 
                 if(wait_for_mapping) {
                     zed.enableSpatialMapping(spatial_mapping_parameters);

@@ -20,6 +20,8 @@ Full example:
 Full example:
 > ./receiver HD1080 -fps 30
 
+* To calculate bandwidth run `bandwidth.sh` file.
+
 192.168.1.95:30000
 
 ## Related to ZED

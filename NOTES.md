@@ -24,6 +24,8 @@
 * Justify use of C++? CMake?
 * Reference GStreamer?
 * Precision Time Protocol (didnt work) [link](https://www.stereolabs.com/docs/video/multi-camera#configure-the-ptp-service-to-synchronize-the-devices)
+* NTP setup to synchronize pc clocks
+* ifstats package to check bandwidth usage
 * Point Clouds (Cloud Compare)
 
 ## Dissertation Chapters
@@ -32,11 +34,15 @@
    - Detail ZED (Capture, display and streaming)
    - Setup codebase (volumetric-video-streaming)
    - Setup experiencias
-   - Evaluation Metrics (Cloudcompare)
+   - Evaluation Metrics
+     - FPS (zed)
+     - Latency (Zed + NTP)
+     - IFstats (bandwidth)
+     - Cloudcompare
 1. Experiments
    - Streaming configurations
    - Subjects
-   - Outputs (csv, ply)
+   - Outputs (csv, ply, log)
    - Consume outputs and generate results
 1. Results
 1. Conclusion
@@ -52,3 +58,8 @@
 * Tranforms point clouds into histograms
 
 * https://www.cloudcompare.org/doc/wiki/index.php/Align
+
+## TODO
+
+* Calculate bandwith (NEED TO TEST)
+* If Cloud compare does not work try to compare results via 2d video (rgb colors)

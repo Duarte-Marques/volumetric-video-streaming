@@ -15,17 +15,15 @@ Broadcast Duration: 30s broadcasts
 | Id | Codec | Resolution | FPS | Bitrate | Output file                                         | Point Cloud                                        |
 |:---|:------|:-----------|:----|:--------|:---------------------------------------------------|:---------------------------------------------------|
 | 1  | H264  | H2K        | 15  | 8000    | [file](./receiver/experiments/gen-1/1715434344.csv) | [file](./receiver/experiments/gen-1/) |
-| 2  | H264  | HD1080     | 30  | 2000    | [file](./receiver/experiments/gen-1/1715434671.csv) | [file](./receiver/experiments/gen-1/) |
-| 3  | H264  | HD1080     | 30  | 8000    | [file](./receiver/experiments/gen-1/1715436353.csv) | [file](./receiver/experiments/gen-1/) |
-| 4  | H264  | HD720      | 30  | 8000    | [file](./receiver/experiments/gen-1/1715436468.csv) | [file](./receiver/experiments/gen-1/) |
-| 5  | H264  | HD720      | 60  | 8000    | [file](./receiver/experiments/gen-1/1715436534.csv) | [file](./receiver/experiments/gen-1/) |
-| 6  | H264  | VGA        | 60  | 8000    | [file](./receiver/experiments/gen-1/1715436588.csv) | [file](./receiver/experiments/gen-1/) |
-| 7  | H265  | H2K        | 15  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
-| 8  | H265  | HD1080     | 30  | 2000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
-| 9  | H265  | HD1080     | 30  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
-| 10 | H265  | HD720      | 30  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
-| 11 | H265  | HD720      | 60  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
-| 12 | H265  | VGA        | 60  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
+| 2  | H264  | HD1080     | 30  | 8000    | [file](./receiver/experiments/gen-1/1715436353.csv) | [file](./receiver/experiments/gen-1/) |
+| 3  | H264  | HD720      | 30  | 8000    | [file](./receiver/experiments/gen-1/1715436468.csv) | [file](./receiver/experiments/gen-1/) |
+| 4  | H264  | HD720      | 60  | 8000    | [file](./receiver/experiments/gen-1/1715436534.csv) | [file](./receiver/experiments/gen-1/) |
+| 5  | H264  | VGA        | 60  | 8000    | [file](./receiver/experiments/gen-1/1715436588.csv) | [file](./receiver/experiments/gen-1/) |
+| 6  | H265  | H2K        | 15  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
+| 7  | H265  | HD1080     | 30  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
+| 8  | H265  | HD720      | 30  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
+| 9  | H265  | HD720      | 60  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
+| 10 | H265  | VGA        | 60  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
 
 ### Subject 2 - Object
 * 5.6x5.6x5.6 cm
@@ -33,14 +31,12 @@ Broadcast Duration: 30s broadcasts
 | Id | Codec | Resolution | FPS | Bitrate | Output file                                         | Point Cloud                                        |
 |:---|:------|:-----------|:----|:--------|:---------------------------------------------------|:---------------------------------------------------|
 | 1  | H264  | H2K        | 15  | 8000    | [file](./receiver/experiments/gen-1/1715434344.csv) | [file](./receiver/experiments/gen-1/) |
-| 2  | H264  | HD1080     | 30  | 2000    | [file](./receiver/experiments/gen-1/1715434671.csv) | [file](./receiver/experiments/gen-1/) |
-| 3  | H264  | HD1080     | 30  | 8000    | [file](./receiver/experiments/gen-1/1715436353.csv) | [file](./receiver/experiments/gen-1/) |
-| 4  | H264  | HD720      | 30  | 8000    | [file](./receiver/experiments/gen-1/1715436468.csv) | [file](./receiver/experiments/gen-1/) |
-| 5  | H264  | HD720      | 60  | 8000    | [file](./receiver/experiments/gen-1/1715436534.csv) | [file](./receiver/experiments/gen-1/) |
-| 6  | H264  | VGA        | 60  | 8000    | [file](./receiver/experiments/gen-1/1715436588.csv) | [file](./receiver/experiments/gen-1/) |
-| 7  | H265  | H2K        | 15  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
-| 8  | H265  | HD1080     | 30  | 2000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
-| 9  | H265  | HD1080     | 30  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
-| 10 | H265  | HD720      | 30  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
-| 11 | H265  | HD720      | 60  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
-| 12 | H265  | VGA        | 60  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
+| 2  | H264  | HD1080     | 30  | 8000    | [file](./receiver/experiments/gen-1/1715436353.csv) | [file](./receiver/experiments/gen-1/) |
+| 3  | H264  | HD720      | 30  | 8000    | [file](./receiver/experiments/gen-1/1715436468.csv) | [file](./receiver/experiments/gen-1/) |
+| 4  | H264  | HD720      | 60  | 8000    | [file](./receiver/experiments/gen-1/1715436534.csv) | [file](./receiver/experiments/gen-1/) |
+| 5  | H264  | VGA        | 60  | 8000    | [file](./receiver/experiments/gen-1/1715436588.csv) | [file](./receiver/experiments/gen-1/) |
+| 6  | H265  | H2K        | 15  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
+| 7  | H265  | HD1080     | 30  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
+| 8  | H265  | HD720      | 30  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
+| 9  | H265  | HD720      | 60  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
+| 10 | H265  | VGA        | 60  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
