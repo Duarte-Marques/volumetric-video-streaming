@@ -54,12 +54,11 @@
   * Iterative closest point (easier, but pc may kabum) [implementation](https://www.open3d.org/docs/release/tutorial/pipelines/global_registration.html)
   * Distance of Chamfer (Alinhar point clouds) [align meshes](https://stackoverflow.com/questions/70160183/how-can-i-align-register-two-meshes-in-open3d-python)
   * Distance of Hausdorf (Alinhar point clouds)
-
 * Tranforms point clouds into histograms
-
 * https://www.cloudcompare.org/doc/wiki/index.php/Align
 
 ## TODO
 
 * Calculate bandwith (NEED TO TEST)
 * If Cloud compare does not work try to compare results via 2d video (rgb colors)
+* Test this: https://github.com/stereolabs/zed-sdk/tree/master/depth%20sensing/depth%20sensing/cpp

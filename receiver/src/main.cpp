@@ -1,98 +1,51 @@
 #include <sl/Camera.hpp>
 #include "GLViewer.hpp"
-#include <opencv2/opencv.hpp>
 
 using namespace std;
 using namespace sl;
 
-#define BUILD_MESH 0
-
-void parse_args(int argc, char **argv, InitParameters& param);
-void print(std::string msg_prefix, sl::ERROR_CODE err_code = sl::ERROR_CODE::SUCCESS, std::string msg_suffix = "");
+void parseArgs(int argc, char **argv, sl::InitParameters& param);
 
 int main(int argc, char **argv) {
     Camera zed;
 
     InitParameters init_parameters;
     init_parameters.depth_mode = DEPTH_MODE::NEURAL;
-    init_parameters.coordinate_units = UNIT::METER;
-    init_parameters.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP; // OpenGL's coordinate system is right_handed
-    init_parameters.depth_maximum_distance = 8.;
-    init_parameters.input.setFromStream("192.168.1.211", 30000);
+    init_parameters.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP;
+    init_parameters.sdk_verbose = 1;
+    // init_parameters.coordinate_units = UNIT::METER;
+    // init_parameters.depth_minimum_distance = 0.15;
 
-    parse_args(argc, argv, init_parameters);
+    parseArgs(argc, argv, init_parameters);
+
     auto returned_state = zed.open(init_parameters);
-
     if (returned_state != ERROR_CODE::SUCCESS) {
-        print("Open Camera", returned_state, "\nExit program.");
-        zed.close();
+        print("Camera Open", returned_state, "Exit program.");
         return EXIT_FAILURE;
     }
 
-    /* Print shortcuts*/
-    std::cout<<"Shortcuts\n";
-    std::cout<<"\t- 'l' to enable/disable current live point cloud display\n";
-    std::cout<<"\t- 'w' to switch mesh display from faces to triangles\n";
-    std::cout<<"\t- 'd' to switch background color from dark to light\n";
+    auto camera_config = zed.getCameraInformation().camera_configuration;
+    float image_aspect_ratio = camera_config.resolution.width / (1.f * camera_config.resolution.height);
+    int requested_low_res_w = min(720, (int)camera_config.resolution.width);
+    sl::Resolution res(requested_low_res_w, requested_low_res_w / image_aspect_ratio);
 
-    auto camera_infos = zed.getCameraInformation();
-
-    // Setup and start positional tracking
-    Pose pose;
-    POSITIONAL_TRACKING_STATE tracking_state = POSITIONAL_TRACKING_STATE::OFF;
+    auto stream = zed.getCUDAStream();
     
-    returned_state = zed.enablePositionalTracking();
-    if (returned_state != ERROR_CODE::SUCCESS) {
-        print("Enabling positional tracking failed: ", returned_state);
-        zed.close();
+    GLViewer viewer; 
+    GLenum errgl = viewer.init(argc, argv, camera_config.calibration_parameters.left_cam, stream, res);
+    if (errgl != GLEW_OK) {
+        print("Error OpenGL: " + std::string((char*)glewGetErrorString(errgl)));
         return EXIT_FAILURE;
     }
 
-    // Set spatial mapping parameters
-    SpatialMappingParameters spatial_mapping_parameters;
-    // Request a Point Cloud
-    #if BUILD_MESH
-        spatial_mapping_parameters.map_type = SpatialMappingParameters::SPATIAL_MAP_TYPE::MESH;
-        Mesh map;
-    #else
-        spatial_mapping_parameters.map_type = SpatialMappingParameters::SPATIAL_MAP_TYPE::FUSED_POINT_CLOUD;
-        FusedPointCloud map;
-    #endif
+    RuntimeParameters runParameters;
+    runParameters.confidence_threshold = 100;
+    runParameters.texture_confidence_threshold = 100;
 
-    // Set mapping range, it will set the resolution accordingly (a higher range, a lower resolution)
-    spatial_mapping_parameters.set(SpatialMappingParameters::MAPPING_RANGE::SHORT);
-    spatial_mapping_parameters.set(SpatialMappingParameters::MAPPING_RESOLUTION::HIGH);
-    // Request partial updates only (only the last updated chunks need to be re-draw)
-    spatial_mapping_parameters.use_chunk_only = true;
-    // Stability counter defines how many times a stable 3D points should be seen before it is integrated into the spatial mapping
-    spatial_mapping_parameters.stability_counter = 4;
-
-    // Timestamp of the last fused point cloud requested
-    chrono::high_resolution_clock::time_point ts_last; 
-
-    // Setup runtime parameters
-    RuntimeParameters runtime_parameters;
-    // Use low depth confidence to avoid introducing noise in the constructed model
-    runtime_parameters.confidence_threshold = 50;
-
-    auto resolution = camera_infos.camera_configuration.resolution;
-
-    // Define display resolution and check that it fit at least the image resolution
-    float image_aspect_ratio = resolution.width / (1.f * resolution.height);
-    int requested_low_res_w = min(720, (int)resolution.width);
-    sl::Resolution display_resolution(requested_low_res_w, requested_low_res_w / image_aspect_ratio);
-
-    Mat image(display_resolution, MAT_TYPE::U8_C4, sl::MEM::GPU);
-    Mat point_cloud(display_resolution, MAT_TYPE::F32_C4, sl::MEM::GPU);
+    // Allocation of 4 channels of float on GPU
+    Mat point_cloud(res, MAT_TYPE::F32_C4, sl::MEM::GPU);
+    print("Press on 's' for saving current .ply file");
     
-    // Point cloud viewer
-    GLViewer viewer;
-
-    viewer.init(argc, argv, image, point_cloud, zed.getCUDAStream());
- 
-    bool request_new_mesh = true;
-    bool wait_for_mapping = true;
-
     sl::Timestamp timestamp_start;
     timestamp_start.data_ns = 0;
 
@@ -102,109 +55,75 @@ int main(int argc, char **argv) {
     std::ofstream outputFile(timestamp + ".csv", std::ios::app);
     outputFile << "fps,latency(ms)" << std::endl;
 
-    // Start the main loop
-    while (viewer.isAvailable()) {
-        // Grab a new image
-        if (zed.grab(runtime_parameters) == ERROR_CODE::SUCCESS)
-        {
-            // Retrieve the left image
-            zed.retrieveImage(image, VIEW::LEFT, MEM::GPU, display_resolution);
-            zed.retrieveMeasure(point_cloud, MEASURE::XYZBGRA, MEM::GPU, display_resolution);
-            // Retrieve the camera pose data
-            tracking_state = zed.getPosition(pose);
-            viewer.updateCameraPose(pose.pose_data, tracking_state);
+    while (viewer.isAvailable()) {        
+        if (zed.grab(runParameters) == ERROR_CODE::SUCCESS) {
+            
+            // retrieve the current 3D coloread point cloud in GPU
+            zed.retrieveMeasure(point_cloud, MEASURE::XYZRGBA, MEM::GPU, res);
+            viewer.updatePointCloud(point_cloud);
 
-            if (tracking_state == POSITIONAL_TRACKING_STATE::OK) {
-                sl::Timestamp image_ts = zed.getTimestamp(sl::TIME_REFERENCE::IMAGE);
-                sl::Timestamp current_ts = zed.getTimestamp(sl::TIME_REFERENCE::CURRENT);
+            // Capture images timestamps
+            sl::Timestamp image_ts = zed.getTimestamp(sl::TIME_REFERENCE::IMAGE);
+            sl::Timestamp current_ts = zed.getTimestamp(sl::TIME_REFERENCE::CURRENT);
+            long long diff_ms = (long long)current_ts.getMilliseconds() - (long long)image_ts.getMilliseconds();
+            
+            // Save current FPS and Latency value to file
+            outputFile << zed.getCurrentFPS() << "," << diff_ms << std::endl;
 
-                long long diff_ms = (long long)current_ts.getMilliseconds() - (long long)image_ts.getMilliseconds();
+            if(viewer.shouldSaveData()){
+                sl::Mat point_cloud_to_save;
+                zed.retrieveMeasure(point_cloud_to_save, MEASURE::XYZRGBA);
                 
-                // Save current FPS and Latency value to file
-                outputFile << zed.getCurrentFPS() << "," << diff_ms << std::endl;
-
-                if(wait_for_mapping) {
-                    zed.enableSpatialMapping(spatial_mapping_parameters);
-                    wait_for_mapping = false;
-                } else {
-                    if(request_new_mesh) {
-                        auto duration = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - ts_last).count();                    
-                        // Ask for a fused point cloud update if 500ms have elapsed since last request
-                        if(duration > 100) {
-                            // Ask for a point cloud refresh
-                            zed.requestSpatialMapAsync();
-                            request_new_mesh = false;
-                        }
-                    }
-                    
-                    // If the point cloud is ready to be retrieved
-                    if(zed.getSpatialMapRequestStatusAsync() == ERROR_CODE::SUCCESS && !request_new_mesh) {
-                        zed.retrieveSpatialMapAsync(map);
-                        viewer.updateMap(map);
-                        request_new_mesh = true;
-                        ts_last = chrono::high_resolution_clock::now();
-                    }
-                }
+                auto write_suceed = point_cloud_to_save.write("Pointcloud.ply");
+                if (write_suceed == sl::ERROR_CODE::SUCCESS)
+                    print("Current .ply file saving succeed");
+                else
+                    print("Current .ply file saving failed");
             }
         }
     }
-
-    outputFile.close();
-
-    map.save(timestamp.c_str(), sl::MESH_FILE_FORMAT::PLY);
-    image.free();
+    
     point_cloud.free();
     zed.close();
-    return 0;
+    return EXIT_SUCCESS;
 }
 
-void parse_args(int argc, char **argv, InitParameters& param)
-{
-    std::vector<std::string> args(argv, argv + argc);
 
-    for(int id = 1; id < argc; id ++) {
-        std::string arg(argv[id]);
+void parseArgs(int argc, char **argv, sl::InitParameters& param) {
+    if (argc > 1 && string(argv[1]).find(".svo") != string::npos) {
+        // SVO input mode
+        param.input.setFromSVOFile(argv[1]);
+        cout << "[Sample] Using SVO File input: " << argv[1] << endl;
+    } else if (argc > 1 && string(argv[1]).find(".svo") == string::npos) {
+        string arg = string(argv[1]);
+        unsigned int a, b, c, d, port;
 
-        if(arg.find(".svo") != string::npos) {
-            // TODO RENDER FROM INPUT FILE -> BEST WAY FOR PRESENTATION?
-            // SVO input mode
-            param.input.setFromSVOFile(arg.c_str());
-            param.svo_real_time_mode=true;
-            cout<<"[Sample] Using SVO File input: "<<arg<<endl;
-        }
-
-        if (arg.find("HD2K") != string::npos) {
+        if (sscanf(arg.c_str(), "%u.%u.%u.%u:%d", &a, &b, &c, &d, &port) == 5) {
+            // Stream input mode - IP + port
+            string ip_adress = to_string(a) + "." + to_string(b) + "." + to_string(c) + "." + to_string(d);
+            param.input.setFromStream(sl::String(ip_adress.c_str()), port);
+            cout << "[Sample] Using Stream input, IP : " << ip_adress << ", port : " << port << endl;
+        
+        } else if (sscanf(arg.c_str(), "%u.%u.%u.%u", &a, &b, &c, &d) == 4) {
+            // Stream input mode - IP only
+            param.input.setFromStream(sl::String(argv[1]));
+            cout << "[Sample] Using Stream input, IP : " << argv[1] << endl;
+        
+        } else if (arg.find("HD2K") != string::npos) {
             param.camera_resolution = RESOLUTION::HD2K;
-            print("Using Camera in resolution HD2K");
-            // FPS 15
+            print("[Sample] Using Camera in resolution HD2K");
+        
         } else if (arg.find("HD1080") != string::npos) {
             param.camera_resolution = RESOLUTION::HD1080;
-            print("Using Camera in resolution HD1080");
-            // FPS 15, 30
+            print("[Sample] Using Camera in resolution HD1080");
+        
         } else if (arg.find("HD720") != string::npos) {
             param.camera_resolution = RESOLUTION::HD720;
-            print("Using Camera in resolution HD720");            
-            // FPS 15, 30, 60
+            print("[Sample] Using Camera in resolution HD720");
+        
         } else if (arg.find("VGA") != string::npos) {
             param.camera_resolution = RESOLUTION::VGA;
-            print("Using Camera in resolution VGA");
-            // FPS 15, 30, 60, 100
+            print("[Sample] Using Camera in resolution VGA");
         }
-    }
-}
-
-void print(std::string msg_prefix, sl::ERROR_CODE err_code, std::string msg_suffix) {
-    cout <<"[Sample]";
-    if (err_code != sl::ERROR_CODE::SUCCESS)
-        cout << "[Error] ";
-    else
-        cout<<" ";
-    cout << msg_prefix << " ";
-    if (err_code != sl::ERROR_CODE::SUCCESS) {
-        cout << " | " << toString(err_code) << " : ";
-        cout << toVerbose(err_code);
-    }
-    if (!msg_suffix.empty())
-        cout << " " << msg_suffix;
-    cout << endl;
+    } 
 }
