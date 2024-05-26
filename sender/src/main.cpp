@@ -81,6 +81,23 @@ void parse_args(int argc, char **argv, StreamingParameters& sparam, InitParamete
             print("Using Camera with " + to_string(fps) + " FPS");
             id++;
         }
+
+        if (arg.find("HD2K") != string::npos) {
+            iparam.camera_resolution = RESOLUTION::HD2K;
+            print("[Sample] Using Camera in resolution HD2K");
+        
+        } else if (arg.find("HD1080") != string::npos) {
+            iparam.camera_resolution = RESOLUTION::HD1080;
+            print("[Sample] Using Camera in resolution HD1080");
+        
+        } else if (arg.find("HD720") != string::npos) {
+            iparam.camera_resolution = RESOLUTION::HD720;
+            print("[Sample] Using Camera in resolution HD720");
+        
+        } else if (arg.find("VGA") != string::npos) {
+            iparam.camera_resolution = RESOLUTION::VGA;
+            print("[Sample] Using Camera in resolution VGA");
+        }
     }
 }
 
