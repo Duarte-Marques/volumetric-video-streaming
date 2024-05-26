@@ -2,4 +2,4 @@
 
 TIMESTAMP=$(date +%s)
 FILEPATH="build/$TIMESTAMP.log"
-ifstat -t 0.5 > "$FILEPATH"
+ifstat -t 0.25 > "$FILEPATH"
