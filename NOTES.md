@@ -1,64 +1,52 @@
 # NOTES
 
-## TEST CASES
-
-* Streaming Codec (set on sender)
-  * H264 - AVCHD/H264 encoding 
-  * H265 - HEVC/H265 encoding 
-  * ex: `stream_params.codec = sl::STREAMING_CODEC::H264;`
-
-* Resolution (Fps available) (set on receiver)
-  * HD2K (15)
-  * HD1080 (15,30)
-  * HD720 (15,30,60)
-  * VGA (15,30,60,100)
-  * ex: `init_params.camera_resolution = RESOLUTION::HD1080;` `init_params.camera_fps = 30;`
-
-* Bitrate (set on sender)
-  * Available range: [1000 - 60000]
-  * `stream_params.bitrate = 8000;`
-
 ## Work Log
 * Install ZED SDK
 * Install CUDA
-* Justify use of C++? CMake?
+* Justify the use of C++? CMake?
 * Reference GStreamer?
-* Precision Time Protocol (didnt work) [link](https://www.stereolabs.com/docs/video/multi-camera#configure-the-ptp-service-to-synchronize-the-devices)
-* NTP setup to synchronize pc clocks
+* Precision Time Protocol (didn't work) [link](https://www.stereolabs.com/docs/video/multi-camera#configure-the-ptp-service-to-synchronize-the-devices)
+* NTP setup to synchronize PC clocks
 * ifstats package to check bandwidth usage
-* Point Clouds (Cloud Compare)
 
 ## Dissertation Chapters
 1. State of the art
 1. Design/Implementation
+   - Environment setup
+     - ZED SDK
+     - CUDA
+     - C++, CMake
    - Detail ZED (Capture, display and streaming)
    - Setup codebase (volumetric-video-streaming)
-   - Setup experiencias
+   - Setup experiences
    - Evaluation Metrics
      - FPS (zed)
-     - Latency (Zed + NTP)
-     - IFstats (bandwidth)
-     - Cloudcompare
+     - Latency (Zed + NTP) (PTP didn't work)
+     - Bandwidth (ifstats)
 1. Experiments
    - Streaming configurations
    - Subjects
    - Outputs (csv, ply, log)
-   - Consume outputs and generate results
 1. Results
+   - Shadows on playback. Connect to the need of multiple cameras.
 1. Conclusion
 1. Future works
-
-## About comparing point clouds
-
-* Open3D Library
-  * Iterative closest point (easier, but pc may kabum) [implementation](https://www.open3d.org/docs/release/tutorial/pipelines/global_registration.html)
-  * Distance of Chamfer (Alinhar point clouds) [align meshes](https://stackoverflow.com/questions/70160183/how-can-i-align-register-two-meshes-in-open3d-python)
-  * Distance of Hausdorf (Alinhar point clouds)
-* Tranforms point clouds into histograms
-* https://www.cloudcompare.org/doc/wiki/index.php/Align
+   - Setup for connecting multiple cameras
 
 ## TODO
 
-* Calculate bandwith (NEED TO TEST)
-* If Cloud compare does not work try to compare results via 2d video (rgb colors)
-* Test this: https://github.com/stereolabs/zed-sdk/tree/master/depth%20sensing/depth%20sensing/cpp
+1. Getting Results
+	  - Record video on the sender and send the output file to the receiver [Recording](https://www.stereolabs.com/docs/video/recording) 
+	  - Record video on sender while broadcasting (is it possible)
+	  - Comparing screenshots
+
+1. Isolate parameters for different cases
+	  - 1080, 720
+	  - fps 15, 30, 60
+	  - bitrate ~10.000 (estudar melhor)
+   - Better understanding of parameters
+
+1. Test scenarios
+   - Static
+   - Low movement
+   - Constant movement
