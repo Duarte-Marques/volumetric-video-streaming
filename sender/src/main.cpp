@@ -36,6 +36,16 @@ int main(int argc, char **argv) {
     // Able to stop with CTRL + C
     SetCtrlHandler();
 
+    sl::Timestamp timestamp_start;
+    timestamp_start.data_ns = 0;
+
+    /*
+    Get current timestamp for latency calculations
+    */
+    auto now = std::chrono::system_clock::now();
+    auto now_time_t = std::chrono::system_clock::to_time_t(now);
+    std::string timestamp = std::to_string(now_time_t);
+
     /*
     Setup recording (if enabled)
     */
