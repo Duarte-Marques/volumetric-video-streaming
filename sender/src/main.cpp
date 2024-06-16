@@ -5,7 +5,7 @@
 using namespace sl;
 using namespace std;
 
-void parse_args(int argc, char **argv, StreamingParameters& sparam, InitParameters& iparam);
+void parse_args(int argc, char **argv, StreamingParameters& sparam, InitParameters& iparam, bool& record);
 void print(string msg_prefix, ERROR_CODE err_code = ERROR_CODE::SUCCESS, string msg_suffix = "");
 
 int main(int argc, char **argv) {
@@ -16,18 +16,18 @@ int main(int argc, char **argv) {
     init_params.depth_mode = DEPTH_MODE::NONE;
     init_params.sdk_verbose = 1;
 
+    bool record = false;
+
     StreamingParameters stream_params;
-    parse_args(argc, argv, stream_params, init_params);
+    parse_args(argc, argv, stream_params, init_params, record);
 
     auto returned_state = zed.open(init_params);
-
     if (returned_state != ERROR_CODE::SUCCESS) {
         print("Camera Open", returned_state, "Exit program.");
         return EXIT_FAILURE;
     }
 
     returned_state = zed.enableStreaming(stream_params);
-
     if (returned_state != ERROR_CODE::SUCCESS) {
         print("Streaming initialization error: ", returned_state);
         return EXIT_FAILURE;
@@ -36,9 +36,34 @@ int main(int argc, char **argv) {
     // Able to stop with CTRL + C
     SetCtrlHandler();
 
+    /*
+    Setup recording (if enabled)
+    */
+    if (record) {
+        RecordingParameters recording_parameters;
+        recording_parameters.video_filename.set((timestamp + ".svo2").c_str());
+        recording_parameters.compression_mode = SVO_COMPRESSION_MODE::H264;
+        returned_state = zed.enableRecording(recording_parameters);
+
+        if (returned_state != ERROR_CODE::SUCCESS) {
+            print("Recording ZED: ", returned_state);
+            zed.close();
+            return EXIT_FAILURE;
+        }
+
+        print("SVO is Recording, use Ctrl-C to stop.");
+        SetCtrlHandler();
+    }
+
+    sl::RecordingStatus rec_status;
+
     while (!exit_app) {
         if (zed.grab() != ERROR_CODE::SUCCESS)
             sleep_ms(1);
+    }
+
+    if (record) {
+        zed.disableRecording();
     }
 
     zed.disableStreaming();
@@ -46,7 +71,7 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-void parse_args(int argc, char **argv, StreamingParameters& sparam, InitParameters& iparam)
+void parse_args(int argc, char **argv, StreamingParameters& sparam, InitParameters& iparam, bool& record)
 {
     std::vector<std::string> args(argv, argv + argc);
 
@@ -80,6 +105,11 @@ void parse_args(int argc, char **argv, StreamingParameters& sparam, InitParamete
             iparam.camera_fps = fps;
             print("Using Camera with " + to_string(fps) + " FPS");
             id++;
+        }
+
+        if (args[id] == "-r") {
+            record = true;
+            print("Recording camera");
         }
 
         if (arg.find("HD2K") != string::npos) {

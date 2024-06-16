@@ -1,34 +1,43 @@
 # EXPERIMENT CASES
 ## 1st Generation
 
-Possible settings:
-* Codec       (H264, H265)
-* Bitrate     (1500, 6000, 12000)
-* Resolution  (H2K, HD1080, HD720, VGA)
-* Fps         (15, 30, 60, 100)
+Static Settings:
+* Codec       (**H264**, H265)
+* Bitrate     (**10.000**)
 
-Broadcast Duration: 30s broadcasts
+Variable Settings:
+* Resolution  (H2K, **HD1080**, **HD720**, VGA)
+* Fps         (15, **30**, **60**)
 
-### Subject 1 - Room
+### Scenario 1
 * 2.75x4.40m (12.1m²)
+* Static
 
-| Id | Codec | Resolution | FPS | Bitrate | Output file                                         | Point Cloud                                        |
-|:---|:------|:-----------|:----|:--------|:---------------------------------------------------|:---------------------------------------------------|
-| 1  | H264  | H2K        | 15  | 8000    | [file](./receiver/experiments/gen-1/1715434344.csv) | [file](./receiver/experiments/gen-1/) |
-| 2  | H264  | HD1080     | 30  | 8000    | [file](./receiver/experiments/gen-1/1715436353.csv) | [file](./receiver/experiments/gen-1/) |
-| 3  | H264  | HD720      | 60  | 8000    | [file](./receiver/experiments/gen-1/1715436534.csv) | [file](./receiver/experiments/gen-1/) |
-| 4  | H264  | VGA        | 60  | 8000    | [file](./receiver/experiments/gen-1/1715436588.csv) | [file](./receiver/experiments/gen-1/) |
-| 5  | H265  | H2K        | 15  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
-| 6  | H265  | HD1080     | 30  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
+| Id | Resolution | FPS | .csv                                         | .log                                         | .SVO2                                         |
+|:---|:-----------|:----|:---------------------------------------------|:---------------------------------------------|:----------------------------------------------|
+| 1  | HD1080     | 15  | [file](./receiver/experiments/.csv) | [file](./receiver/experiments/.log) | [file](./receiver/experiments/.svo2) |
+| 2  | HD1080     | 30  | [file](./receiver/experiments/.csv) | [file](./receiver/experiments/.log) | [file](./receiver/experiments/.svo2) |
+| 3  | HD720      | 30  | [file](./receiver/experiments/.csv) | [file](./receiver/experiments/.log) | [file](./receiver/experiments/.svo2) |
+| 4  | HD720      | 60  | [file](./receiver/experiments/.csv) | [file](./receiver/experiments/.log) | [file](./receiver/experiments/.svo2) |
 
-### Subject 2 - Object
-* 5.6x5.6x5.6 cm
+### Scenario 2
+* 2.75x4.40m (12.1m²)
+* Low movement
 
-| Id | Codec | Resolution | FPS | Bitrate | Output file                                         | Point Cloud                                        |
-|:---|:------|:-----------|:----|:--------|:---------------------------------------------------|:---------------------------------------------------|
-| 1  | H264  | H2K        | 15  | 8000    | [file](./receiver/experiments/gen-1/1715434344.csv) | [file](./receiver/experiments/gen-1/) |
-| 2  | H264  | HD1080     | 30  | 8000    | [file](./receiver/experiments/gen-1/1715436353.csv) | [file](./receiver/experiments/gen-1/) |
-| 3  | H264  | HD720      | 60  | 8000    | [file](./receiver/experiments/gen-1/1715436534.csv) | [file](./receiver/experiments/gen-1/) |
-| 4  | H264  | VGA        | 60  | 8000    | [file](./receiver/experiments/gen-1/1715436588.csv) | [file](./receiver/experiments/gen-1/) |
-| 5  | H265  | H2K        | 15  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
-| 6  | H265  | HD1080     | 30  | 8000    | [file](./receiver/experiments/gen-1/) | [file](./receiver/experiments/gen-1/) |
+| Id | Resolution | FPS | .csv                                         | .log                                         | .SVO2                                         |
+|:---|:-----------|:----|:---------------------------------------------|:---------------------------------------------|:----------------------------------------------|
+| 5  | HD1080     | 15  | [file](./receiver/experiments/.csv) | [file](./receiver/experiments/.log) | [file](./receiver/experiments/.svo2) |
+| 6  | HD1080     | 30  | [file](./receiver/experiments/.csv) | [file](./receiver/experiments/.log) | [file](./receiver/experiments/.svo2) |
+| 7  | HD720      | 30  | [file](./receiver/experiments/.csv) | [file](./receiver/experiments/.log) | [file](./receiver/experiments/.svo2) |
+| 8  | HD720      | 60  | [file](./receiver/experiments/.csv) | [file](./receiver/experiments/.log) | [file](./receiver/experiments/.svo2) |
+
+## Scenario 3
+* 2.75x4.40m (12.1m²)
+* Constant movement
+
+| Id | Resolution | FPS | .csv                                         | .log                                         | .SVO2                                         |
+|:---|:-----------|:----|:---------------------------------------------|:---------------------------------------------|:----------------------------------------------|
+| 9  | HD1080     | 15  | [file](./receiver/experiments/.csv) | [file](./receiver/experiments/.log) | [file](./receiver/experiments/.svo2) |
+| 10 | HD1080     | 30  | [file](./receiver/experiments/.csv) | [file](./receiver/experiments/.log) | [file](./receiver/experiments/.svo2) |
+| 11 | HD720      | 30  | [file](./receiver/experiments/.csv) | [file](./receiver/experiments/.log) | [file](./receiver/experiments/.svo2) |
+| 12 | HD720      | 60  | [file](./receiver/experiments/.csv) | [file](./receiver/experiments/.log) | [file](./receiver/experiments/.svo2) |

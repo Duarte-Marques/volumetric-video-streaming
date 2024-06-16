@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     /*
     Allocation of 4 channels of float on GPU
     */
-    Mat point_cloud(res, MAT_TYPE::F32_C4, sl::MEM::GPU);1
+    Mat point_cloud(res, MAT_TYPE::F32_C4, sl::MEM::GPU);
     print("Press on 's' for saving current .ply file");
     
     sl::Timestamp timestamp_start;
@@ -122,7 +122,6 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-
 void parseArgs(int argc, char **argv, sl::InitParameters& param, bool& record) {
     if (argc > 1 && string(argv[1]).find(".svo") != string::npos) {
         // SVO input mode
@@ -170,7 +169,6 @@ void parseArgs(int argc, char **argv, sl::InitParameters& param, bool& record) {
         if (args[id] == "-r") {
             record = true;
             print("Recording camera");
-            print(std::to_string(record));
         }
     }
 }
