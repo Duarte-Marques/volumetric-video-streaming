@@ -23,11 +23,10 @@
      - Latency (Zed + NTP) (PTP didn't work)
      - Bandwidth (ifstats)
      - Record file (.SVO2)
-4. Experiments
+4. Results
    - Streaming configurations
    - Scenarios
    - Outputs (csv, log, .svo2)
-5. Results
    - Shadows on playback. Connect to the need of multiple cameras.
 6. Conclusion
 7. Future works

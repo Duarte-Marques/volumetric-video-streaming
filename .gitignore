@@ -9,6 +9,7 @@
 *.lo
 *.o
 *.obj
+*.avi
 
 # Precompiled Headers
 *.gch
