@@ -17,19 +17,19 @@
      - ZED SDK - Detail ZED (Capture, display and streaming)
      - CUDA
      - C++, CMake
-   - Setup codebase (volumetric-video-streaming, sender, receiver, recorder*, playback*)
+   - Architecture (sender, receiver, bandwidth, playback*)
    - Evaluation Metrics
      - FPS (zed)
      - Latency (Zed + NTP) (PTP didn't work)
      - Bandwidth (ifstats)
      - Record file (.SVO2)
-4. Results
-   - Streaming configurations
-   - Scenarios
+4. Experiments & Results
+   - Hardware speficitaions
+   - Streaming scenarios/configuration
    - Outputs (csv, log, .svo2)
-   - Shadows on playback. Connect to the need of multiple cameras.
-6. Conclusion
-7. Future works
+   - **Shadows on playback. Connect to the need of multiple cameras.
+5. Conclusion
+6. Future works
    - Setup for connecting multiple cameras
 
 ## Updates from State of the Art Presentation

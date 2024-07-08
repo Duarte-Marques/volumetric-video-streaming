@@ -47,18 +47,11 @@ int main(int argc, char **argv) {
     Allocation of 4 channels of float on GPU
     */
     Mat point_cloud(res, MAT_TYPE::F32_C4, sl::MEM::GPU);
-    print("Press on 's' for saving current .ply file");
-    
-    sl::Timestamp timestamp_start;
-    timestamp_start.data_ns = 0;
 
     /*
-    Get current timestamp for latency calculations
+    Create output CSV file and write header
     */
-    auto now = std::chrono::system_clock::now();
-    auto now_time_t = std::chrono::system_clock::to_time_t(now);
-    std::string timestamp = std::to_string(now_time_t);
-    std::ofstream outputFile(timestamp + ".csv", std::ios::app);
+    std::ofstream outputFile("values.csv", std::ios::app);
     outputFile << "FPS,LATENCY (MS)" << std::endl;
 
     /*
@@ -66,7 +59,7 @@ int main(int argc, char **argv) {
     */
     if (record) {
         RecordingParameters recording_parameters;
-        recording_parameters.video_filename.set((timestamp + ".svo2").c_str());
+        recording_parameters.video_filename.set("output.svo2");
         recording_parameters.compression_mode = SVO_COMPRESSION_MODE::H264;
         returned_state = zed.enableRecording(recording_parameters);
 
@@ -79,8 +72,6 @@ int main(int argc, char **argv) {
         print("SVO is Recording, use Ctrl-C to stop.");
         SetCtrlHandler();
     }
-
-    sl::RecordingStatus rec_status;
 
     /*
     Main loop
@@ -99,17 +90,6 @@ int main(int argc, char **argv) {
             
             // Save current FPS and Latency value to file
             outputFile << zed.getCurrentFPS() << "," << diff_ms << std::endl;
-
-            if(viewer.shouldSaveData()) {
-                sl::Mat point_cloud_to_save;
-                zed.retrieveMeasure(point_cloud_to_save, MEASURE::XYZRGBA);
-                
-                auto write_suceed = point_cloud_to_save.write("Pointcloud.ply");
-                if (write_suceed == sl::ERROR_CODE::SUCCESS)
-                    print("Current .ply file saving succeed");
-                else
-                    print("Current .ply file saving failed");
-            }
         }
     }
     

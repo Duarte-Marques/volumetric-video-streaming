@@ -12,13 +12,13 @@ int main(int argc, char **argv) {
     Camera zed;
 
     InitParameters init_params;
-    // init_params.camera_resolution = sl::RESOLUTION::AUTO;
     init_params.depth_mode = DEPTH_MODE::NONE;
     init_params.sdk_verbose = 1;
 
+    StreamingParameters stream_params;
+
     bool record = false;
 
-    StreamingParameters stream_params;
     parse_args(argc, argv, stream_params, init_params, record);
 
     auto returned_state = zed.open(init_params);
@@ -36,36 +36,21 @@ int main(int argc, char **argv) {
     // Able to stop with CTRL + C
     SetCtrlHandler();
 
-    sl::Timestamp timestamp_start;
-    timestamp_start.data_ns = 0;
-
-    /*
-    Get current timestamp for latency calculations
-    */
-    auto now = std::chrono::system_clock::now();
-    auto now_time_t = std::chrono::system_clock::to_time_t(now);
-    std::string timestamp = std::to_string(now_time_t);
-
-    /*
-    Setup recording (if enabled)
-    */
     if (record) {
         RecordingParameters recording_parameters;
-        recording_parameters.video_filename.set((timestamp + ".svo2").c_str());
+        recording_parameters.video_filename.set("sender.svo2");
         recording_parameters.compression_mode = SVO_COMPRESSION_MODE::H264;
         returned_state = zed.enableRecording(recording_parameters);
 
         if (returned_state != ERROR_CODE::SUCCESS) {
             print("Recording ZED: ", returned_state);
+            zed.disableStreaming();
             zed.close();
             return EXIT_FAILURE;
         }
 
         print("SVO is Recording, use Ctrl-C to stop.");
-        SetCtrlHandler();
     }
-
-    sl::RecordingStatus rec_status;
 
     while (!exit_app) {
         if (zed.grab() != ERROR_CODE::SUCCESS)

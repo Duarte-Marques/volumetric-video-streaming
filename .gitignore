@@ -1,6 +1,9 @@
 # Build directory
 **/build/
 
+# Experiments directory
+experiments/
+
 # Prerequisites
 *.d
 
